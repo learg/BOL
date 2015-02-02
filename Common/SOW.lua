@@ -1,6 +1,6 @@
-local version = "1.1303"
+local version = "1.1304"
 local AUTOUPDATE = true
-local UPDATE_HOST = "raw.githubusercontent.com"
+local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/KeVuong/BOL/master/Common/SOW.lua".."?rand="..math.random(1,1000)
 local UPDATE_FILE_PATH = LIB_PATH.."SOW.lua"
 local UPDATE_URL = "https://"..UPDATE_HOST..UPDATE_PATH
@@ -149,7 +149,7 @@ function SOW:LoadToMenu(m, STS)
 	
 	self.CurrentMode = MODE_NONE
 	self.Target = nil
-	PrintChat("<font color=\"##6699ff\"><b>Simple OrbWalker: </b></font> <font color=\"#FFFFFF\">Successfully Loaded</b></font>")
+	PrintChat("<font color=\"#6699ff\"><b>Simple OrbWalker: </b></font> <font color=\"#FFFFFF\">Successfully Loaded</b></font>")
 	
 	AddTickCallback(function() self:OnTick() end)
 	AddTickCallback(function() self:CheckConfig() end)
@@ -280,8 +280,20 @@ function SOW:OrbWalk(target, point)
 		self:Attack(target)
 	elseif self:CanMove() and self.Move then
 		if not point then
-			--local OBTarget = GetTarget() or target
-			--if self.Menu.Mode == 1 or not OBTarget then
+			if myHero.isMelee then 
+				local OBTarget = self:GetTarget() or target
+				if OBTarget then
+					local pos = self.VP:GetPredictedPos(OBTarget, 0, 2*myHero.ms, myHero, false)
+					if pos and self.Menu.Mode0 then
+						self:MoveTo(pos.x, pos.z)
+					end
+				else
+						local Mv = Vector(myHero) + 200 * (Vector(mousePos) - Vector(myHero)):normalized()
+						self:MoveTo(Mv.x, Mv.z)
+				end
+			 end	
+			else		
+			
 				local Mv = Vector(myHero) + 200 * (Vector(mousePos) - Vector(myHero)):normalized()
 				self:MoveTo(Mv.x, Mv.z)
 			--elseif GetDistanceSqr(OBTarget) > 100*100 + math.pow(self:GetHitBox(OBTarget), 2) then
@@ -667,7 +679,7 @@ function SOW:OnTick()
 	if myHero.ischanelling then return end
 	if self.Menu.Mode0 then
 		local target = self:GetTarget(true)
-		if self.Menu.Attack == 2 then
+		if target then
 			self:OrbWalk(target)
 		else
 			self:OrbWalk()
@@ -812,13 +824,7 @@ function SOW:DrawCircle2(x, y, z, radius, color)
 end
 
 function SOW:DrawKillable()
-	for i,minion in pairs(self.EnemyMinions.objects)do 
-		if ValidTarget(minion)then
-		--print(minion.health)
-			if minion.health + 2 <= getDmg("AD",minion,myHero) then 
-				self:DrawCircle2(minion.x,minion.y,minion.z,100,ARGB(255,0,255,0))
-				
-			end
-		end
-	end 
+	local minion = self:KillableMinion()
+	self:DrawCircle2(minion.x,minion.y,minion.z,100,ARGB(255,0,255,0))
+	
 end 
