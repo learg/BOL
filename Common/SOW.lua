@@ -1,4 +1,4 @@
-local version = "1.1304"
+local version = "1.1305"
 local AUTOUPDATE = true
 local UPDATE_HOST = "raw.github.com"
 local UPDATE_PATH = "/KeVuong/BOL/master/Common/SOW.lua".."?rand="..math.random(1,1000)
@@ -88,7 +88,7 @@ function SOW:__init(VP)
 	self.checkcancel = 0
 
 	AddProcessSpellCallback(function(unit, spell) self:OnProcessSpell(unit, spell) end)
-	WayPointManager.AddCallback(function(NetworkID) self:OnNewWayPoints(NetworkID) end)
+	--WayPointManager.AddCallback(function(NetworkID) self:OnNewWayPoints(NetworkID) end)
 	_G.SOWLoaded = true
 end
 
